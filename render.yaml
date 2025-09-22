@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: pack-calculator
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    branch: main
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: PACK_SIZES
+        value: "250,500,1000,2000,5000"
+    healthCheckPath: /
+    autoDeploy: true
