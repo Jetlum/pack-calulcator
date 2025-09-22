@@ -16,6 +16,7 @@ The service solves the pack optimization problem where:
 - Web UI for easy interaction
 - Caching for performance optimization
 - Docker support for easy deployment
+- Thread-safe operations with comprehensive testing
 
 ## Quick Start
 
@@ -71,6 +72,7 @@ go run main.go
 ### Update Pack Sizes
 - **POST** `/api/pack-sizes`
 - **Body**: `{"packSizes": [250, 500, 1000, 2000, 5000]}`
+- **Response**: `{"success": true, "packSizes": [250, 500, 1000, 2000, 5000]}`
 
 ## Environment Variables
 
@@ -87,58 +89,68 @@ make test
 make test-coverage
 ```
 
+### Test Cases Covered
+- Basic pack calculations
+- Edge cases with large numbers
+- Invalid inputs and error handling
+- Caching functionality
+- HTTP endpoint testing
+- Thread safety
+
 ## Edge Case Verification
 
 The algorithm correctly handles the specified edge case:
-- Pack Sizes: [23, 31, 53]
-- Amount: 500,000
-- Expected Output: {23: 2, 31: 7, 53: 9429}
+- **Pack Sizes**: [23, 31, 53]
+- **Amount**: 500,000
+- **Expected Output**: {23: 2, 31: 7, 53: 9429}
+- **Total Items**: 500,000 (exact match)
+- **Total Packs**: 9,438
+
+## Algorithm
+
+The application uses a **Dynamic Programming** approach to solve the pack optimization problem:
+
+1. **Rule Priority**: Minimize total items first, then minimize number of packs
+2. **Optimization**: Caching for repeated calculations
+3. **Thread Safety**: Read-write mutex for concurrent access
+4. **Performance**: Efficient DP table with early termination
 
 ## Architecture
 
-The application uses:
-- Dynamic Programming for optimal pack calculation
-- Caching for performance optimization
-- Thread-safe operations with sync.RWMutex
-- Clean separation of concerns
+The application features:
+- **Dynamic Programming** for optimal pack calculation
+- **In-memory caching** for performance optimization
+- **Thread-safe operations** with `sync.RWMutex`
+- **Clean separation of concerns** between HTTP handlers and business logic
+- **Comprehensive error handling** and input validation
+- **CORS support** for web UI integration
 
 ## Deployment
 
-### Render (Recommended)
+### Render
 
-1. **Push to GitHub**:
-```bash
-git init
-git add .
-git commit -m "feat: complete pack calculator implementation"
-git branch -M main
-git remote add origin https://github.com/yourusername/pack-calculator.git
-git push -u origin main
-```
+1. **Push to GitHub**
 
 2. **Deploy on Render**:
    - Go to [render.com](https://render.com)
    - Connect your GitHub repository
    - Choose "Web Service"
-   - Use Docker environment
+   - Select **Docker** environment
+   - Use `render.yaml` configuration
    - Set environment variables if needed
 
-3. **Manual Deployment**:
-```bash
-# The render.yaml file will automatically configure the deployment
-```
-
-### Docker Hub
-
-```bash
-docker build -t yourusername/pack-calculator .
-docker push yourusername/pack-calculator
-```
+3. **Automatic Deployment**:
+   The `render.yaml` file will automatically configure the deployment with:
+   - Docker container build
+   - Environment variables
+   - Health check endpoint
+   - Auto-deploy from main/master branch
 
 ### Local Testing
 
 ```bash
-# Test locally first
+# Test locally
+go mod tidy
 go test -v
 go run main.go
 
@@ -147,48 +159,40 @@ make docker-build
 make docker-run
 ```
 
-## Git Best Practices
+### Manual Docker Deployment
 
-Example commit history:
 ```bash
-git add go.mod
-git commit -m "build: fix Go version from 1.25.1 to 1.21"
+# Build and push to Docker Hub
+docker build -t yourusername/pack-calculator .
+docker push yourusername/pack-calculator
 
-git add Dockerfile
-git commit -m "build: fix Dockerfile Go version"
-
-git add Makefile
-git commit -m "build: fix Makefile indentation with tabs"
-
-git add README.md
-git commit -m "docs: add comprehensive documentation"
-
-git add main.go
-git commit -m "feat: implement pack calculator with dynamic programming"
-
-git add main_test.go
-git commit -m "test: add comprehensive unit tests"
-
-git add render.yaml
-git commit -m "deploy: add Render deployment configuration"
+# Run anywhere
+docker run -p 8080:8080 yourusername/pack-calculator
 ```
 
 ## Live Demo
 
-Once deployed on Render, your app will be available at:
-`https://your-app-name.onrender.com`
+**Render URL**: `https://pack-calculator.onrender.com/`
 
-Test the edge case:
+### Test the Edge Case
+
 ```bash
-curl -X POST https://your-app-name.onrender.com/api/pack-sizes \
+# Update pack sizes to edge case values
+curl -X POST https://pack-calculator.onrender.com/api/pack-sizes \
   -H "Content-Type: application/json" \
   -d '{"packSizes": [23, 31, 53]}'
 
-curl -X POST https://your-app-name.onrender.com/api/calculate \
+# Calculate for 500,000 items
+curl -X POST https://pack-calculator.onrender.com/api/calculate \
   -H "Content-Type: application/json" \
   -d '{"items": 500000}'
 ```
 
-## License
-
-MIT
+**Expected Response**:
+```json
+{
+  "packs": {"23": 2, "31": 7, "53": 9429},
+  "totalItems": 500000,
+  "totalPacks": 9438
+}
+```

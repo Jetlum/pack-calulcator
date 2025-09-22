@@ -3,40 +3,40 @@
 # Default target
 help:
     @echo "Available commands:"
-    @echo "  make run            - Run the application locally"
-    @echo "  make test           - Run unit tests"
-    @echo "  make test-coverage  - Run tests with coverage report"
-    @echo "  make build          - Build the binary"
-    @echo "  make docker-build   - Build Docker image"
-    @echo "  make docker-run     - Run Docker container"
-    @echo "  make clean          - Clean build artifacts"
+	@echo "	make run		- Run the application locally"
+	@echo "	make test		- Run unit tests"
+	@echo "	make test-coverage	- Run tests with coverage report"
+	@echo "	make build		- Build the binary"
+	@echo "	make docker-build	- Build Docker image"
+	@echo "	make docker-run		- Run Docker container"
+	@echo "	make clean		- Clean build artifacts"
 
 # Run the application
 run:
-    @go run main.go
+	@go run main.go
 
 # Run tests
 test:
-    @go test -v ./...
+	@go test -v ./...
 
 # Run tests with coverage
 test-coverage:
-    @go test -v -cover -coverprofile=coverage.out ./...
-    @go tool cover -html=coverage.out -o coverage.html
-    @echo "Coverage report generated: coverage.html"
+	@go test -v -cover -coverprofile=coverage.out ./...
+	@go tool cover -html=coverage.out -o coverage.html
+	@echo "Coverage report generated: coverage.html"
 
 # Build binary
 build:
-    @go build -o bin/pack-calculator main.go
+	@go build -o bin/pack-calculator main.go
 
 # Build Docker image
 docker-build:
-    @docker build -t pack-calculator:latest .
+	@docker build -t pack-calculator:latest .
 
 # Run Docker container
 docker-run:
-    @docker run -p 8080:8080 --rm pack-calculator:latest
+	@docker run -p 8080:8080 --rm pack-calculator:latest
 
 # Clean build artifacts
 clean:
-    @rm -rf bin/ coverage.out coverage.html
+	@rm -rf bin/ coverage.out coverage.html
