@@ -44,7 +44,7 @@ type PackCalculator struct {
 // NewPackCalculator creates a new pack calculator with default pack sizes
 func NewPackCalculator() *PackCalculator {
     return &PackCalculator{
-        packSizes: []int{250, 500, 1000, 2000, 5000},
+        packSizes: []int{5000, 2000, 1000, 500, 250},
         cache:     make(map[string]*CalculationResponse),
     }
 }
