@@ -2,7 +2,7 @@ services:
   - type: web
     name: pack-calculator
     env: docker
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./deployments/Dockerfile
     plan: free
     region: frankfurt
     branch: main

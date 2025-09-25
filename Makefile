@@ -13,7 +13,7 @@ help:
 
 # Run the application
 run:
-	@go run main.go
+	@go run cmd/server/main.go
 
 # Run tests
 test:
@@ -27,11 +27,12 @@ test-coverage:
 
 # Build binary
 build:
-	@go build -o bin/pack-calculator main.go
+	@mkdir -p bin
+	@go build -o bin/pack-calculator cmd/server/main.go
 
 # Build Docker image
 docker-build:
-	@docker build -t pack-calculator:latest .
+	@docker build -f deployments/Dockerfile -t pack-calculator:latest .
 
 # Run Docker container
 docker-run:
